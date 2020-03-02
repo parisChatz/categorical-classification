@@ -30,7 +30,7 @@ total_test = 0
 # Algorithm parameters
 learning_rate = 1e-3
 batch_size = 100
-epochs = 150
+epochs = 200
 l2_score = 1e-3
 model_name = 'cat_vs_dog-{}--{}--{}.h5'.format(learning_rate, epochs, '3conv-1base')
 graph_name = 'images/documentation/cat_vs_dog_metrics_plot_lr-{}_epochs-{}-{}.png'.format(learning_rate, epochs,
@@ -72,15 +72,15 @@ model = Sequential([
 
 # Arguments for data augmentation
 data_gen_args = dict(rescale=1. / 255,
-                     # featurewise_center=True,
-                     # featurewise_std_normalization=True,
-                     rotation_range=10,
-                     width_shift_range=0.2,
-                     height_shift_range=0.2,
-                     zoom_range=0.2,
-                     horizontal_flip=True,
-                     shear_range=0.2,
-                     brightness_range=[0.8, 1.0]  # 0.5 unchanged, 0 all black 1, all white
+                     # # featurewise_center=True,
+                     # # featurewise_std_normalization=True,
+                     # rotation_range=10,
+                     # width_shift_range=0.2,
+                     # height_shift_range=0.2,
+                     # zoom_range=0.2,
+                     # horizontal_flip=True,
+                     # shear_range=0.2,
+                     # brightness_range=[0.8, 1.0]  # 0.5 unchanged, 0 all black 1, all white
                      )
 
 
@@ -243,7 +243,8 @@ if __name__ == "__main__":
     validation_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our validation data
 
     # Generate images
-    train_image_generator.fit(train_X)
+    # train_image_generator.fit(
+    #     train_X)  # Only needed if statistics are used(featurewise_center, featurewise_std_normalization, zca_whitening)
     # validation_image_generator.fit(test_X)
 
     train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=25, shuffle=True)
