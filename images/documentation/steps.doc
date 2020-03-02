@@ -1,0 +1,13 @@
+﻿First model 3conv 1 base (dense) with Data augmentation. Tried only different epochs. Until 400 epochs. Observed good accuracy loss plots. Best model around 80% accuracy.
+
+
+
+Next was Dropout regularization. At 100 epochs dropout showed small underfittness. 
+
+Run the same model with 400 epochs. Regrardless the resutls next step is, if still underfit, to increase the layers of the model. Validation accuracy was higher than training acc. Also the 300 epoch model was better than the 400 with Dropout (less than 78% val accuracy.)
+
+It’s possible that due to disabling neurons, some of information about each sample is lost, and the subsequent layers attempt to construct the answers basing on incomplete representations. The training loss is higher because i’ve made it artificially harder for the network to give the right answers. However, during validation all of the units are available, so the network has its full computational power - and thus it might perform better than in training. 
+
+The depth is now 4 conv and 1 base with increasing dropoout on every layer and batch normalisation and l2 weight regularization but only for 100 epochs. 
+
+Why so much oscilation in val acc???
