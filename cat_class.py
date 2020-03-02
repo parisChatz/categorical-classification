@@ -23,18 +23,18 @@ from tensorflow.keras.utils import plot_model
 base_dir = "images"
 train_dir = base_dir + '/train'
 test_dir = base_dir + '/test'
-img_size = 100  # 50x50 pixels
+img_size = 50  # 50x50 pixels
 total_train = 0
 total_test = 0
 
 # Algorithm parameters
 learning_rate = 1e-3
-batch_size = 10
-epochs = 10
+batch_size = 100
+epochs = 150
 l2_score = 1e-3
-model_name = 'cat_vs_dog-{}--{}--{}.h5'.format(learning_rate, epochs, '3conv-2base')
+model_name = 'cat_vs_dog-{}--{}--{}.h5'.format(learning_rate, epochs, '3conv-1base')
 graph_name = 'images/documentation/cat_vs_dog_metrics_plot_lr-{}_epochs-{}-{}.png'.format(learning_rate, epochs,
-                                                                                          '3conv-2base')
+                                                                                          '3conv-1base')
 
 model = Sequential([
     Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(img_size, img_size, 1),
@@ -45,14 +45,16 @@ model = Sequential([
     # BatchNormalization(),
     # MaxPooling2D(),
     # Dropout(0.1),
-    Conv2D(64, (3, 3), padding='same', activation='relu', kernel_initializer='he_uniform',
+    Conv2D(64, (3, 3), padding='same', activation='relu'
+           # , kernel_initializer='he_uniform',
            # kernel_regularizer=l2(l2_score),
            # bias_regularizer=l2(l2_score)
            ),
     # BatchNormalization(),
     MaxPooling2D(),
     # Dropout(0.1),
-    Conv2D(128, (3, 3), padding='same', activation='relu', kernel_initializer='he_uniform',
+    Conv2D(128, (3, 3), padding='same', activation='relu'
+           # , kernel_initializer='he_uniform',
            # kernel_regularizer=l2(l2_score),
            # bias_regularizer=l2(l2_score)
            ),
@@ -64,22 +66,21 @@ model = Sequential([
           # kernel_regularizer=l2(l2_score),
           # bias_regularizer=l2(l2_score)
           ),
-    Dropout(0.2),
+    # Dropout(0.2),
     Dense(2, activation='softmax')
 ])
 
 # Arguments for data augmentation
-# todo find why augmentation bugs
 data_gen_args = dict(rescale=1. / 255,
                      # featurewise_center=True,
                      # featurewise_std_normalization=True,
-                     rotation_range=20,
+                     rotation_range=10,
                      width_shift_range=0.2,
                      height_shift_range=0.2,
                      zoom_range=0.2,
                      horizontal_flip=True,
                      shear_range=0.2,
-                     brightness_range=[0.3, 1.0]  # 0.5 unchanged, 0 all black 1, all white
+                     brightness_range=[0.8, 1.0]  # 0.5 unchanged, 0 all black 1, all white
                      )
 
 
@@ -206,12 +207,12 @@ def find_momentum(trainX, trainy, testX, testy):
 
 
 if __name__ == "__main__":
-    if os.path.exists('train_100x100_input_data.npy'):
+    if os.path.exists('train_data.npy'):
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print("Loading preprocessed dataset!")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        train = np.load('train_100x100_input_data.npy', allow_pickle=True)
-        test = np.load('test_100x100_input_data.npy', allow_pickle=True)
+        train = np.load('train_data.npy', allow_pickle=True)
+        test = np.load('test_data.npy', allow_pickle=True)
         total_train, total_test = [len(train), len(test)]
 
     else:
@@ -223,9 +224,10 @@ if __name__ == "__main__":
         # Show dataset shape
         total_train, total_test = analyse_images(train_dir, test_dir)
 
-    if os.path.exists('{}.meta'.format(model_name)):
-        model.load(model_name)
-        print('model loaded!')
+    # # read whole model
+    # if os.path.exists('{}.meta'.format(model_name)):
+    #     model.load(model_name)
+    #     print('model loaded!')
 
     train_X = np.array([i[0] for i in train]).reshape(-1, img_size, img_size, 1)
     train_Y = [i[1] for i in train]
@@ -241,9 +243,11 @@ if __name__ == "__main__":
     validation_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our validation data
 
     # Generate images
-    # train_image_generator.fit(train_X) # for some reason this make the model stuck at low acc
-    train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=5, shuffle=True)
-    test_data_gen = validation_image_generator.flow(test_X, test_Y, batch_size=5, shuffle=True)
+    train_image_generator.fit(train_X)
+    # validation_image_generator.fit(test_X)
+
+    train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=25, shuffle=True)
+    test_data_gen = validation_image_generator.flow(test_X, test_Y, batch_size=25, shuffle=False)
 
     # Save generated images
     # save_generated_images()
@@ -252,8 +256,8 @@ if __name__ == "__main__":
     # model.summary()
 
     # Adaptive Learning Rate SDG() (keep in mind adam works well with dropout)
-    # opt = Adam()
-    opt = SGD(learning_rate=learning_rate)
+    opt = Adam()
+    # opt = SGD(learning_rate=learning_rate)
 
     # Compile
     model.compile(optimizer=opt,
@@ -279,8 +283,8 @@ if __name__ == "__main__":
     # model.summary()
 
     # Plot training & validation accuracy/loss values
-    acc = history.history['acc']
-    val_acc = history.history['val_acc']
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
 
     loss = history.history['loss']
     val_loss = history.history['val_loss']
