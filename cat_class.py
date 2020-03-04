@@ -1,22 +1,23 @@
 import os
 from random import shuffle
 
-import cv2
+from cv2 import imread, resize, IMREAD_GRAYSCALE
 import numpy as np
 from matplotlib import pyplot
 from tqdm import tqdm
-from PIL import Image
+# from PIL import Image
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow.keras.metrics import categorical_accuracy
-from tensorflow.keras.optimizers import Adam, SGD
-from tensorflow.keras.regularizers import l2
+from tensorflow.keras.optimizers import Adam  # , SGD
+# from tensorflow.keras.regularizers import l2
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+# Load model if model saved
 # from keras.models import load_model
+# Save image of network
 from tensorflow.keras.utils import plot_model
 
 # Dataset variables
@@ -29,12 +30,14 @@ total_test = 0
 
 # Algorithm parameters
 learning_rate = 1e-3
-batch_size = 100
-epochs = 200
+batch_size = 50
+epochs = 50  # todo test for 200 epoch
 l2_score = 1e-3
 model_name = 'cat_vs_dog-{}--{}--{}.h5'.format(learning_rate, epochs, '3conv-1base')
-graph_name = 'images/documentation/cat_vs_dog_metrics_plot_lr-{}_epochs-{}-{}.png'.format(learning_rate, epochs,
-                                                                                          '3conv-1base')
+graph_name = 'images/documentation/cat_vs_dog_metrics_plot_lr-{}_epochs-{}_batchsize-{}-{}.png'.format(learning_rate,
+                                                                                                       batch_size,
+                                                                                                       epochs,
+                                                                                                       '3conv-1base')
 # todo create other script with 4 models inside and import them one after the other
 model = Sequential([
     Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(img_size, img_size, 1),
@@ -72,18 +75,19 @@ model = Sequential([
 
 # Arguments for data augmentation
 data_gen_args = dict(rescale=1. / 255,
-                     # # featurewise_center=True,
-                     # # featurewise_std_normalization=True,
-                     # rotation_range=10,
-                     # width_shift_range=0.2,
-                     # height_shift_range=0.2,
-                     # zoom_range=0.2,
-                     # horizontal_flip=True,
-                     # shear_range=0.2,
-                     # brightness_range=[0.8, 1.0]  # 0.5 unchanged, 0 all black 1, all white
+                     # featurewise_center=True,
+                     # featurewise_std_normalization=True,
+                     rotation_range=10,
+                     width_shift_range=0.2,
+                     height_shift_range=0.2,
+                     zoom_range=0.2,
+                     horizontal_flip=True,
+                     shear_range=0.2,
+                     brightness_range=[0.8, 1.0]  # 0.5 unchanged, 0 all black 1, all white
                      )
 
 
+# todo create and import script for dataset import
 def label_image(img):
     # Input single image
     # Output returns label depending on name of image
@@ -103,15 +107,16 @@ def process_data_set(directory, dataset_type):
     for img in tqdm(os.listdir(directory)):
         path = os.path.join(directory, img)
         label = label_image(img)
-        img = cv2.resize(cv2.imread(path, cv2.IMREAD_GRAYSCALE), (img_size, img_size))
+        img = resize(imread(path, IMREAD_GRAYSCALE), (img_size, img_size))
         data.append([np.array(img), np.array(label)])
         # print(label,path)
     if dataset_type == "train":
         shuffle(data)
-    np.save('{}_{}x{}_input_data.npy'.format(dataset_type, img_size, img_size), data)
+    np.save('{}_data_{}x{}.npy'.format(dataset_type, img_size, img_size), data)
     return data
 
 
+# todo create and import script for plots
 def plotImages(images_arr):
     fig, axes = plt.subplots(1, 5, figsize=(20, 20))
     axes = axes.flatten()
@@ -163,6 +168,7 @@ def plot_results(accuracy, val_accuracy, error, val_error, epoch, save_image=Fal
     plt.show()
 
 
+# todo create and import script for optimizations
 # best pipeline? : best architecture -> best optimizer -> best LR -> best momentum
 # Best optimizer
 def find_optimizer(trainX, trainy, testX, testy):
@@ -207,12 +213,12 @@ def find_momentum(trainX, trainy, testX, testy):
 
 
 if __name__ == "__main__":
-    if os.path.exists('train_data.npy'):
+    if os.path.exists('train_data_{}x{}.npy'.format(img_size, img_size)):
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print("Loading preprocessed dataset!")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        train = np.load('train_data.npy', allow_pickle=True)
-        test = np.load('test_data.npy', allow_pickle=True)
+        train = np.load('train_data_{}x{}.npy'.format(img_size, img_size), allow_pickle=True)
+        test = np.load('test_data_{}x{}.npy'.format(img_size, img_size), allow_pickle=True)
         total_train, total_test = [len(train), len(test)]
 
     else:
@@ -243,8 +249,8 @@ if __name__ == "__main__":
     validation_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our validation data
 
     # Generate images
-    # train_image_generator.fit(
-    #     train_X)  # Only needed if statistics are used(featurewise_center, featurewise_std_normalization, zca_whitening)
+    # Only needed if statistics are used(featurewise_center, featurewise_std_normalization, zca_whitening)
+    # train_image_generator.fit(train_X)
     # validation_image_generator.fit(test_X)
 
     train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=25, shuffle=True)
@@ -279,7 +285,7 @@ if __name__ == "__main__":
 
     # Save model
     # model.save(model_name)
-    # Load model if saved
+    # Load model if model saved
     # model = tf.keras.models.load_model(model_name)
     # model.summary()
 
