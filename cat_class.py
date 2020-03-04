@@ -35,7 +35,7 @@ l2_score = 1e-3
 model_name = 'cat_vs_dog-{}--{}--{}.h5'.format(learning_rate, epochs, '3conv-1base')
 graph_name = 'images/documentation/cat_vs_dog_metrics_plot_lr-{}_epochs-{}-{}.png'.format(learning_rate, epochs,
                                                                                           '3conv-1base')
-
+# todo create other script with 4 models inside and import them one after the other
 model = Sequential([
     Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(img_size, img_size, 1),
            # kernel_initializer='he_uniform',
@@ -101,8 +101,8 @@ def process_data_set(directory, dataset_type):
 
     data = []
     for img in tqdm(os.listdir(directory)):
-        label = label_image(img)
         path = os.path.join(directory, img)
+        label = label_image(img)
         img = cv2.resize(cv2.imread(path, cv2.IMREAD_GRAYSCALE), (img_size, img_size))
         data.append([np.array(img), np.array(label)])
         # print(label,path)
