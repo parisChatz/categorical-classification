@@ -11,3 +11,6 @@ It’s possible that due to disabling neurons, some of information about each sa
 The depth is now 4 conv and 1 base with increasing dropoout on every layer and batch normalisation and l2 weight regularization but only for 100 epochs. 
 
 Why so much oscilation in val acc???
+learning rate: 𝛼 is too large, so SGD jumps too far and misses the area near local minima. This would be extreme case of "under-fitting" (insensitivity to data itself), but might generate (kind of) "low-frequency" noise on the output by scrambling data from the input - contrary to the overfitting intuition, it would be like always guessing heads when predicting a coin. As @JanKukacka pointed out, arriving at the area "too close to" a minima might cause overfitting, so if 𝛼 is too small it would get sensitive to "high-frequency" noise in your data. 𝛼 should be somewhere in between.
+
+
