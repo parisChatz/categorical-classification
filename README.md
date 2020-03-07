@@ -44,20 +44,6 @@ Give an example
 ## Deployment
 
 Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-
-## Authors
-
-* **Parasekvas Chatzithanos** 
-
-
-## License
-
-This project is licensed under the <none> License - see the [LICENSE.md](LICENSE.md) file for details
-
 ## Acknowledgments
 
 * Hat tip to anyone whose code was used

@@ -1,16 +1,19 @@
 from tensorflow.keras.optimizers import RMSprop
 
 # Algorithm parameters
-learning_rate = [1e-4]
-momentum = 0.9
+# learning_rates = [1e-2, 1e-3, 1e-4]
+# momentum = 0.9
 
-# opt = ['sgd', 'rmsprop', 'adagrad', 'adam']
+optimizers = ['SGD', 'AdaDelta', 'AdaGrad', 'Adam']
 
-batch_size = [15, 55, 105]  # todo try different. best 16
-epochs = [200]
-l2_score = 1e-3
+# reminder 60 batch is too few update steps for weight
+batch_size = [10, 12, 14, 16, 18, 20, 22]
+epochs = [3]
 
-model_name = 'cat_vs_dog-{}--{}--{}--{}--{}.h5'.format(learning_rate, epochs, batch_size, 'sgd', '3conv-1base')
+# reminder 1e-5 is to small
+l2_score = [0.01, 0.001, 0.0001]
+
+# model_name = 'cat_vs_dog-{}--{}--{}--{}--{}.h5'.format(learning_rate, epochs, batch_size, 'sgd', '3conv-1base')
 
 # Dataset variables
 base_dir = "images"

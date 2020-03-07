@@ -33,12 +33,12 @@ def process_data_set(directory, dataset_type, img_size):
     return data
 
 
-def analyse_images(traindir, testdir):
+def analyse_images(train_dir, test_dir):
     # Input directories
     # Output prints with number of data
 
-    total_train_number = len(os.listdir(traindir))
-    total_test_number = len(os.listdir(testdir))
+    total_train_number = len(os.listdir(train_dir))
+    total_test_number = len(os.listdir(test_dir))
 
     print("--")
     print("Total training images:", total_train_number)

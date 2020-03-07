@@ -13,4 +13,17 @@ The depth is now 4 conv and 1 base with increasing dropoout on every layer and b
 Why so much oscilation in val acc???
 learning rate: 𝛼 is too large, so SGD jumps too far and misses the area near local minima. This would be extreme case of "under-fitting" (insensitivity to data itself), but might generate (kind of) "low-frequency" noise on the output by scrambling data from the input - contrary to the overfitting intuition, it would be like always guessing heads when predicting a coin. As @JanKukacka pointed out, arriving at the area "too close to" a minima might cause overfitting, so if 𝛼 is too small it would get sensitive to "high-frequency" noise in your data. 𝛼 should be somewhere in between.
 
+So the network has a lot of freedom about choosing from different ways of classifying the training data. But only some of them are really good generalizations, others are overfitting on training data. As a result sometimes validation performance is good, sometimes bad. You can try L2 regularization and dropout. But in any case, it would be okay to pick the model that resulted in the highest validation accuracy, because your validation set is large. A high validation performance cannot happen by coincidence in such a large set. Therefore I don’t see these fluctuations as such a big problem.
+
+
+Optimizers:
+
+1)AdaGrad penalizes the learning rate too harshly for parameters which are frequently updated and gives more learning rate to sparse parameters,parameters that are not updated as frequently. In several problems often the most critical information is present in the data that is not as frequent but sparse. So if the problem you are working on deals with sparse data such as tf-idf,etc. Adagrad can be useful.
+
+2)AdaDelta,RMSProp almost works on similar lines with the only difference in Adadelta you don't require an initial learning rate constant to start with.
+
+3)Adam combines the good properties of Adadelta and RMSprop and hence tend to do better for most of the problems.
+
+4)Stochastic gradient descent is very basic and is seldom used now. One problem is with the global learning rate associated with the same. Hence it doesn't work well when the parameters are in different scales since a low learning rate will make the learning slow while a large learning rate might lead to oscillations. Also Stochastic gradient descent generally has a hard time escaping the saddle points. Adagrad,Adadelta,RMSprop and ADAM generally handle saddle points better. SGD with momentum renders some speed to the optimization and also helps escape local minima better.
+
 

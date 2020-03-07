@@ -6,7 +6,7 @@ from PIL import Image
 from config_data_aug_params import data_gen_args
 
 
-def plotImages(images_arr, img_size):
+def plot_images(images_arr, img_size):
     for i in range(1, 7):
         plt.subplot(2, 3, i)
         plt.imshow(images_arr[i].reshape(img_size, img_size), cmap='gray')
@@ -25,12 +25,15 @@ def save_generated_images(train_X, train_Y):
             break  # otherwise the generator would loop indefinitely
 
 
-def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, learning_rate, opt, save_image=False):
-    graph_name = 'images/documentation/{}/cat_vs_dog_metrics_plot_lr-{}_epochs-{}_batch-{}-{}.png'.format(opt,
-                                                                                                          learning_rate,
-                                                                                                          epoch,
-                                                                                                          batch_size,
-                                                                                                          '3conv-1base')
+def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, learning_rate, opt, l2_score,
+                 save_image=False):
+    graph_name = 'images/documentation/{}/metrics_plot_lr-{}_l2-{}_batch-{}_epochs-{}.png'.format(opt,
+                                                                                                  learning_rate,
+                                                                                                  l2_score,
+                                                                                                  batch_size,
+                                                                                                  epoch,
+                                                                                                  '3conv-1base')
+
     epochs_range = range(epoch)
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 2, 1)
@@ -49,3 +52,33 @@ def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, le
     print('~~~~~~ Complete ~~~~~~')
     plt.pause(2)
     plt.close()
+
+    return graph_name
+
+
+def plot_results_optimizers(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, save_image=False):
+    graph_name = 'images/documentation/optimizers/metrics_plot_{}_batch-{}_epochs-{}.png'.format(opt,
+                                                                                                 batch_size,
+                                                                                                 epoch,
+                                                                                                 '3conv-1base')
+
+    epochs_range = range(epoch)
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, accuracy, label='Training Accuracy')
+    plt.plot(epochs_range, val_accuracy, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation Accuracy')
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, error, label='Training Loss')
+    plt.plot(epochs_range, val_error, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    if save_image is True:
+        plt.savefig(graph_name)
+    plt.show(block=False)
+    print('~~~~~~ Complete ~~~~~~')
+    plt.pause(2)
+    plt.close()
+
+    return graph_name

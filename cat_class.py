@@ -1,7 +1,14 @@
 import os
 import numpy as np
+import pandas as pd
+
+# Tensorflow libs
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-# from tensorflow.keras.regularizers import l2
+from tensorflow.keras.optimizers import SGD
+# Load Model if Model saved
+# from tensorflow.keras.models import load_model
+# Save image of network
+from tensorflow.keras.utils import plot_model
 
 # Custom libraries
 import plotting
@@ -10,16 +17,7 @@ import data_preprocessing
 # Custom config files
 from config_data_aug_params import data_gen_args
 from config_hyperparameters import *
-from config_model_architecture import modelX as Model1
 from config_model_architecture import define_model
-from tensorflow.keras.optimizers import SGD
-# Load Model if Model saved
-# from keras.models import load_model
-
-# Save image of network
-from tensorflow.keras.utils import plot_model
-
-# todo create other script with 4 models inside and import them one after the other
 
 if __name__ == "__main__":
     if os.path.exists('train_data_{}x{}.npy'.format(img_size, img_size)):
@@ -51,9 +49,9 @@ if __name__ == "__main__":
     test_Y = [i[1] for i in test]
 
     # Plot first 5 images from X array
-    # plotting.plotImages(train_X[10:], img_size)
+    # plotting.plot_images(train_X[10:], img_size)
 
-    # todo develop a function that runs the whole trainning of a Model
+    # todo develop a function that runs the whole training of a Model
     # Initialise augmented image generators
     train_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our training data
     validation_image_generator = ImageDataGenerator(rescale=1. / 255)  # Generator for our validation data
@@ -73,43 +71,65 @@ if __name__ == "__main__":
     # Network characteristics
     # Model.summary()
 
-    # todo for different batch sizes do epoch 200
-    for lr in learning_rate:
-        for batch in batch_size:
-            for epoch in epochs:
-                Model = define_model()
-                # Compile
+    metrics = {'acc': [], 'val_acc': [], 'loss': [], 'val_loss': [], 'batch_size': [], 'optimizers': [],
+               'regularizator': []}
+    metrics = pd.DataFrame(data=metrics)
 
-                # Adaptive Learning Rate SDG() (keep in mind adam works well with dropout)
-                opt = SGD(learning_rate=lr)
+    for optimizer in optimizers:
+        for regularizator in l2_score:
+            # for learning_rate in learning_rates:
+            for batch in batch_size:
+                for epoch in epochs:
+                    modelX = define_model(regularizator)
+                    # print(optimizer)
+                    # opt1 = eval(optimizer)
+                    # opt = opt1(learning_rate=learning_rate, momentum=momentum)
 
-                Model.compile(optimizer=opt,
-                              loss="categorical_crossentropy",
-                              metrics=["accuracy"])
+                    modelX.compile(optimizer=optimizer,
+                                   loss="categorical_crossentropy",
+                                   metrics=["accuracy"])
 
-                # Fit
-                history = Model.fit(
-                    train_data_gen,
-                    steps_per_epoch=total_train // batch,
-                    validation_data=test_data_gen,
-                    validation_steps=total_test // batch,
-                    epochs=epoch,
-                    verbose=1)
+                    history = modelX.fit(
+                        train_data_gen,
+                        steps_per_epoch=total_train // batch,
+                        validation_data=test_data_gen,
+                        validation_steps=total_test // batch,
+                        # todo check if vel_steps are the cause of val_acc fluctuation
+                        epochs=epoch,
+                        verbose=1)
 
-                # Save image of network
-                # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
-                # show_shapes=True, expand_nested=True)
+                    # Save image of network
+                    # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
+                    # show_shapes=True, expand_nested=True)
 
-                # Save Model
-                # Model.save(model_name)
-                # Load Model if Model saved
-                # Model = tf.keras.models.load_model(model_name)
-                # Model.summary()
+                    # Save Model
+                    # Model.save(model_name)
 
-                # Plot training & validation accuracy/loss values
-                acc = history.history['accuracy']
-                val_acc = history.history['val_accuracy']
-                loss = history.history['loss']
-                val_loss = history.history['val_loss']
+                    # Load Model if Model saved
+                    # Model = tf.keras.models.load_model(model_name)
+                    # Model.summary()
 
-                plotting.plot_results(acc, val_acc, loss, val_loss, epoch, batch, lr, "sgd", save_image=True)
+                    # Plot training & validation accuracy/loss values
+                    acc = history.history['accuracy']
+                    val_acc = history.history['val_accuracy']
+                    loss = history.history['loss']
+                    val_loss = history.history['val_loss']
+
+                    # name = plotting.plot_results(acc, val_acc, loss, val_loss, epoch, batch, learning_rate,
+                    #                              optimizers[0],
+                    #                              regularizator,
+                    #                              save_image=True)
+
+                    name = plotting.plot_results_optimizers(acc, val_acc, loss, val_loss, epoch, batch,
+                                                            optimizer,
+                                                            save_image=True)
+
+                    temp_metrics = pd.Series(
+                        [acc[-1], val_acc[-1], loss[-1], val_loss[-1], batch, optimizer, regularizator],
+                        index=['acc', 'val_acc', 'loss', 'val_loss', 'batch_size', 'optimizers',
+                               'regularizator'])
+
+                    metrics = metrics.append(temp_metrics, ignore_index=True)
+                    print(metrics.head())
+
+    metrics.to_csv("images/documentation/optimizer_metrics.csv")
