@@ -1,7 +1,7 @@
 from matplotlib import pyplot
 
 
-# best pipeline? : best architecture -> best optimizer -> best LR -> best momentum
+# best pipeline? : best architecture -> best optimizer -> best LR -> best momentum TODO yes!
 # Best optimizer
 def find_optimizer(trainX, trainy, testX, testy):
     # create learning curves for different optimizers

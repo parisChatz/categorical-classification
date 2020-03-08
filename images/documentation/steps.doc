@@ -26,4 +26,8 @@ Optimizers:
 
 4)Stochastic gradient descent is very basic and is seldom used now. One problem is with the global learning rate associated with the same. Hence it doesn't work well when the parameters are in different scales since a low learning rate will make the learning slow while a large learning rate might lead to oscillations. Also Stochastic gradient descent generally has a hard time escaping the saddle points. Adagrad,Adadelta,RMSprop and ADAM generally handle saddle points better. SGD with momentum renders some speed to the optimization and also helps escape local minima better.
 
+If you think that a big amount of pixels are necessary for the network to recognize the object you will use large filters (as 11x11 or 9x9). If you think what differentiates objects are some small and local features you should use small filters (3x3 or 5x5)
+
+Introducing Batch Normalization:- Generally in deep neural network architectures the normalized input after passing through various adjustments in intermediate layers becomes too big or too small while it reaches far away layers which causes a problem of internal co-variate shift which impacts learning to solve this we add a batch normalization layer to standardize (mean centering and variance scaling) the input given to the later layers. This layer must generally be placed in the architecture after passing it through the layer containing activation function and before the Dropout layer(if any) . An exception is for the sigmoid activation function wherein you need to place the batch normalization layer before the activation to ensure that the values lie in linear region of sigmoid before the function is applied.
+
 

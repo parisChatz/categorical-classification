@@ -18,7 +18,7 @@ def label_image(img):
 def process_data_set(directory, dataset_type, img_size):
     # Input directory of dataset and state if it's "train_set" or "test" dataset
     # Output is an array of greyscaled images of the directory
-    # It saves the array-ed dataset for future faster inport of dataset
+    # It saves the array-ed dataset for future faster import of dataset
 
     data = []
     for img in tqdm(os.listdir(directory)):
@@ -26,10 +26,22 @@ def process_data_set(directory, dataset_type, img_size):
         label = label_image(img)
         img = resize(imread(path, IMREAD_GRAYSCALE), (img_size, img_size))
         data.append([np.array(img), np.array(label)])
-        # print(label,path)
     if dataset_type == "train":
         shuffle(data)
     np.save('{}_data_{}x{}.npy'.format(dataset_type, img_size, img_size), data)
+    return data
+
+
+# new process data for rgb todo test this
+def process_data_set2(directory, dataset_type, img_size):
+    data = []
+    for img in tqdm(os.listdir(directory)):
+        path = os.path.join(directory, img)
+        label = label_image(img)
+        img = resize(imread(path), (img_size, img_size, 3))
+        data.append([np.array(img), np.array(label)])
+    if dataset_type == "train":
+        shuffle(data)
     return data
 
 

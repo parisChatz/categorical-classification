@@ -48,10 +48,15 @@ if __name__ == "__main__":
     test_X = np.array([i[0] for i in test]).reshape(-1, img_size, img_size, 1)
     test_Y = [i[1] for i in test]
 
+    # For RGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+    # train_X = np.array([i[0] for i in train])
+    # train_Y = [i[1] for i in train]
+    # test_X = np.array([i[0] for i in test])
+    # test_Y = [i[1] for i in test]
+
     # Plot first 5 images from X array
     # plotting.plot_images(train_X[10:], img_size)
 
-    # todo develop a function that runs the whole training of a Model
     # Initialise augmented image generators
     train_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our training data
     validation_image_generator = ImageDataGenerator(rescale=1. / 255)  # Generator for our validation data
@@ -72,64 +77,62 @@ if __name__ == "__main__":
     # Model.summary()
 
     metrics = {'acc': [], 'val_acc': [], 'loss': [], 'val_loss': [], 'batch_size': [], 'optimizers': [],
-               'regularizator': []}
+               'regularizator': [], 'model': []}
     metrics = pd.DataFrame(data=metrics)
 
-    for optimizer in optimizers:
-        for regularizator in l2_score:
+    for model in models:
+        for optimizer in optimizers:
             # for learning_rate in learning_rates:
-            for batch in batch_size:
-                for epoch in epochs:
-                    modelX = define_model(regularizator)
-                    # print(optimizer)
-                    # opt1 = eval(optimizer)
-                    # opt = opt1(learning_rate=learning_rate, momentum=momentum)
+            for regularizator in l2_score:
+                for batch in batch_size:
+                    for epoch in epochs:
+                        modelX = define_model(model, regularizator)
 
-                    modelX.compile(optimizer=optimizer,
-                                   loss="categorical_crossentropy",
-                                   metrics=["accuracy"])
+                        # opt1 = eval(optimizer)
+                        # opt = opt1(learning_rate=learning_rate, momentum=momentum)
 
-                    history = modelX.fit(
-                        train_data_gen,
-                        steps_per_epoch=total_train // batch,
-                        validation_data=test_data_gen,
-                        validation_steps=total_test // batch,
-                        # todo check if vel_steps are the cause of val_acc fluctuation
-                        epochs=epoch,
-                        verbose=1)
+                        modelX.compile(optimizer=optimizer,
+                                       loss="categorical_crossentropy",
+                                       metrics=["accuracy"])
 
-                    # Save image of network
-                    # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
-                    # show_shapes=True, expand_nested=True)
+                        history = modelX.fit(
+                            train_data_gen,
+                            steps_per_epoch=total_train // batch,
+                            validation_data=test_data_gen,
+                            validation_steps=total_test // batch,
+                            epochs=epoch)
 
-                    # Save Model
-                    # Model.save(model_name)
+                        # Save image of network
+                        # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
+                        # show_shapes=True, expand_nested=True)
 
-                    # Load Model if Model saved
-                    # Model = tf.keras.models.load_model(model_name)
-                    # Model.summary()
+                        # Save Model
+                        # Model.save(model_name)
 
-                    # Plot training & validation accuracy/loss values
-                    acc = history.history['accuracy']
-                    val_acc = history.history['val_accuracy']
-                    loss = history.history['loss']
-                    val_loss = history.history['val_loss']
+                        # Load Model if Model saved
+                        # Model = tf.keras.models.load_model(model_name)
+                        # Model.summary()
 
-                    # name = plotting.plot_results(acc, val_acc, loss, val_loss, epoch, batch, learning_rate,
-                    #                              optimizers[0],
-                    #                              regularizator,
-                    #                              save_image=True)
+                        # Plot training & validation accuracy/loss values
+                        acc = history.history['accuracy']
+                        val_acc = history.history['val_accuracy']
+                        loss = history.history['loss']
+                        val_loss = history.history['val_loss']
 
-                    name = plotting.plot_results_optimizers(acc, val_acc, loss, val_loss, epoch, batch,
-                                                            optimizer,
-                                                            save_image=True)
+                        # name = plotting.plot_results(acc, val_acc, loss, val_loss, epoch, batch, learning_rate,
+                        #                              optimizers[0],
+                        #                              regularizator,
+                        #                              save_image=True)
 
-                    temp_metrics = pd.Series(
-                        [acc[-1], val_acc[-1], loss[-1], val_loss[-1], batch, optimizer, regularizator],
-                        index=['acc', 'val_acc', 'loss', 'val_loss', 'batch_size', 'optimizers',
-                               'regularizator'])
+                        name = plotting.plot_results_optimizers(acc, val_acc, loss, val_loss, epoch, batch,
+                                                                optimizer, name,
+                                                                save_image=True)
 
-                    metrics = metrics.append(temp_metrics, ignore_index=True)
-                    print(metrics.head())
+                        temp_metrics = pd.Series(
+                            [acc[-1], val_acc[-1], loss[-1], val_loss[-1], batch, optimizer, regularizator, model],
+                            index=['acc', 'val_acc', 'loss', 'val_loss', 'batch_size', 'optimizers',
+                                   'regularizator', 'model'])
 
-    metrics.to_csv("images/documentation/optimizer_metrics.csv")
+                        metrics = metrics.append(temp_metrics, ignore_index=True)
+                        print(metrics.head())
+                        metrics.to_csv("images/documentation/optimizer_metrics.csv", index=False)

@@ -56,11 +56,11 @@ def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, le
     return graph_name
 
 
-def plot_results_optimizers(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, save_image=False):
-    graph_name = 'images/documentation/optimizers/metrics_plot_{}_batch-{}_epochs-{}.png'.format(opt,
-                                                                                                 batch_size,
-                                                                                                 epoch,
-                                                                                                 '3conv-1base')
+def plot_results_optimizers(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, name, save_image=False):
+    graph_name = 'images/documentation/optimizers/{}_{}_batch-{}_epochs-{}.png'.format(name, opt,
+                                                                                       batch_size,
+                                                                                       epoch,
+                                                                                       '3conv-1base-simple')
 
     epochs_range = range(epoch)
     plt.figure(figsize=(8, 8))
