@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 What things you need to install.
 
 ```
-Just make sure to install every imported library.
+sudo pip3 install -r requirements.txt
 ```
 
 ### Installing

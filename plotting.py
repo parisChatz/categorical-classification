@@ -25,14 +25,15 @@ def save_generated_images(train_X, train_Y):
             break  # otherwise the generator would loop indefinitely
 
 
-def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, learning_rate, opt, l2_score,
+def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, lr, mom, opt, name,
                  save_image=False):
-    graph_name = 'images/documentation/{}/metrics_plot_lr-{}_l2-{}_batch-{}_epochs-{}.png'.format(opt,
-                                                                                                  learning_rate,
-                                                                                                  l2_score,
-                                                                                                  batch_size,
-                                                                                                  epoch,
-                                                                                                  '3conv-1base')
+    graph_name = 'images/documentation/good/{}_{}_lr-{}_mom-{}_batch-{}_epochs-{}_extreme_aug.png'.format(name,
+                                                                                                          opt,
+                                                                                                          lr,
+                                                                                                          mom,
+                                                                                                          batch_size,
+                                                                                                          epoch
+                                                                                                          )
 
     epochs_range = range(epoch)
     plt.figure(figsize=(8, 8))
@@ -57,7 +58,7 @@ def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, le
 
 
 def plot_results_optimizers(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, name, save_image=False):
-    graph_name = 'images/documentation/optimizers/{}_{}_batch-{}_epochs-{}.png'.format(name, opt,
+    graph_name = 'images/documentation/lr_and_mom/{}_{}_batch-{}_epochs-{}.png'.format(name, opt,
                                                                                        batch_size,
                                                                                        epoch,
                                                                                        '3conv-1base-simple')

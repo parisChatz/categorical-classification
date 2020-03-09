@@ -46,24 +46,24 @@ def define_model(name, l2_score, dropout=0):
         return model
     elif name == "vgg2":
         model = Sequential()
-        model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+        model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          input_shape=(img_size, img_size, 1), kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
-        model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+        model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
-        model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+        model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
-        model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+        model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Flatten())
-        model.add(Dense(128, activation='relu', kernel_initializer='he_uniform', kernel_regularizer=l2(l2_score),
+        model.add(Dense(128, activation='relu', kernel_initializer='glorot_normal', kernel_regularizer=l2(l2_score),
                         bias_regularizer=l2(l2_score)))
         model.add(Dropout(dropout))
         model.add(Dense(2, activation='softmax'))
@@ -72,7 +72,7 @@ def define_model(name, l2_score, dropout=0):
     elif name == "vgg3":
         model = Sequential()
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
-                         input_shape=(img_size, img_size, 1), kernel_regularizer=l2(l2_score),
+                         input_shape=(img_size, img_size, 3), kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),

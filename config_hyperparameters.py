@@ -1,15 +1,20 @@
 from tensorflow.keras.optimizers import RMSprop
 
-# todo maybe regularization?
+# maybe regularization? no overfit so dont need
 # todo maybe BatchNormalization()?
 # todo transfer learning
 
 # Algorithm parameters
 # learning_rates = [1e-2, 1e-3, 1e-4]
-# momentum = 0.9
+# momentums = [0.5, 0.6, 0.9]
+momentums = [0]
+learning_rates = [1e-2]
 
-models = ['vgg1', 'vgg2', 'vgg3', 'lenet5']
-optimizers = ['SGD', 'AdaDelta', 'AdaGrad', 'Adam']
+# models = ['vgg1', 'vgg2', 'vgg3', 'lenet5']
+models = ['vgg3']
+
+# optimizers = ['SGD', 'AdaDelta', 'AdaGrad', 'Adam']
+optimizers = ['SGD']
 
 # reminder 60 batch is too few update steps for weight
 batch_size = [16]

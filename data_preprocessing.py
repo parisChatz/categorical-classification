@@ -32,13 +32,13 @@ def process_data_set(directory, dataset_type, img_size):
     return data
 
 
-# new process data for rgb todo test this
-def process_data_set2(directory, dataset_type, img_size):
+# new process data for rgb
+def process_data_set_rgb(directory, dataset_type, img_size):
     data = []
     for img in tqdm(os.listdir(directory)):
         path = os.path.join(directory, img)
         label = label_image(img)
-        img = resize(imread(path), (img_size, img_size, 3))
+        img = resize(imread(path), (img_size, img_size))
         data.append([np.array(img), np.array(label)])
     if dataset_type == "train":
         shuffle(data)
