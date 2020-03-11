@@ -72,7 +72,7 @@ def define_model(name, l2_score, dropout=0):
     elif name == "vgg3":
         model = Sequential()
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
-                         input_shape=(img_size, img_size, 3), kernel_regularizer=l2(l2_score),
+                         input_shape=(img_size, img_size, 1), kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),

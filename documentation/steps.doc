@@ -1,0 +1,33 @@
+﻿First model 3conv 1 base (dense) with Data augmentation. Tried only different epochs. Until 400 epochs. Observed good accuracy loss plots. Best model around 80% accuracy.
+
+
+
+Next was Dropout regularization. At 100 epochs dropout showed small underfittness. 
+
+Run the same model with 400 epochs. Regrardless the resutls next step is, if still underfit, to increase the layers of the model. Validation accuracy was higher than training acc. Also the 300 epoch model was better than the 400 with Dropout (less than 78% val accuracy.)
+
+It’s possible that due to disabling neurons, some of information about each sample is lost, and the subsequent layers attempt to construct the answers basing on incomplete representations. The training loss is higher because i’ve made it artificially harder for the network to give the right answers. However, during validation all of the units are available, so the network has its full computational power - and thus it might perform better than in training. 
+
+The depth is now 4 conv and 1 base with increasing dropoout on every layer and batch normalisation and l2 weight regularization but only for 100 epochs. 
+
+Why so much oscilation in val acc???
+learning rate: 𝛼 is too large, so SGD jumps too far and misses the area near local minima. This would be extreme case of "under-fitting" (insensitivity to data itself), but might generate (kind of) "low-frequency" noise on the output by scrambling data from the input - contrary to the overfitting intuition, it would be like always guessing heads when predicting a coin. As @JanKukacka pointed out, arriving at the area "too close to" a minima might cause overfitting, so if 𝛼 is too small it would get sensitive to "high-frequency" noise in your data. 𝛼 should be somewhere in between.
+
+So the network has a lot of freedom about choosing from different ways of classifying the training data. But only some of them are really good generalizations, others are overfitting on training data. As a result sometimes validation performance is good, sometimes bad. You can try L2 regularization and dropout. But in any case, it would be okay to pick the model that resulted in the highest validation accuracy, because your validation set is large. A high validation performance cannot happen by coincidence in such a large set. Therefore I don’t see these fluctuations as such a big problem.
+
+
+Optimizers:
+
+1)AdaGrad penalizes the learning rate too harshly for parameters which are frequently updated and gives more learning rate to sparse parameters,parameters that are not updated as frequently. In several problems often the most critical information is present in the data that is not as frequent but sparse. So if the problem you are working on deals with sparse data such as tf-idf,etc. Adagrad can be useful.
+
+2)AdaDelta,RMSProp almost works on similar lines with the only difference in Adadelta you don't require an initial learning rate constant to start with.
+
+3)Adam combines the good properties of Adadelta and RMSprop and hence tend to do better for most of the problems.
+
+4)Stochastic gradient descent is very basic and is seldom used now. One problem is with the global learning rate associated with the same. Hence it doesn't work well when the parameters are in different scales since a low learning rate will make the learning slow while a large learning rate might lead to oscillations. Also Stochastic gradient descent generally has a hard time escaping the saddle points. Adagrad,Adadelta,RMSprop and ADAM generally handle saddle points better. SGD with momentum renders some speed to the optimization and also helps escape local minima better.
+
+If you think that a big amount of pixels are necessary for the network to recognize the object you will use large filters (as 11x11 or 9x9). If you think what differentiates objects are some small and local features you should use small filters (3x3 or 5x5)
+
+Introducing Batch Normalization:- Generally in deep neural network architectures the normalized input after passing through various adjustments in intermediate layers becomes too big or too small while it reaches far away layers which causes a problem of internal co-variate shift which impacts learning to solve this we add a batch normalization layer to standardize (mean centering and variance scaling) the input given to the later layers. This layer must generally be placed in the architecture after passing it through the layer containing activation function and before the Dropout layer(if any) . An exception is for the sigmoid activation function wherein you need to place the batch normalization layer before the activation to ensure that the values lie in linear region of sigmoid before the function is applied.
+
+

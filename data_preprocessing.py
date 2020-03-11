@@ -15,7 +15,7 @@ def label_image(img):
         return [0, 1]
 
 
-def process_data_set(directory, dataset_type, img_size):
+def process_data_set_grayscale(directory, dataset_type, img_size):
     # Input directory of dataset and state if it's "train_set" or "test" dataset
     # Output is an array of greyscaled images of the directory
     # It saves the array-ed dataset for future faster import of dataset
@@ -28,7 +28,7 @@ def process_data_set(directory, dataset_type, img_size):
         data.append([np.array(img), np.array(label)])
     if dataset_type == "train":
         shuffle(data)
-    np.save('{}_data_{}x{}.npy'.format(dataset_type, img_size, img_size), data)
+    np.save('{}_grayscale_data_{}x{}.npy'.format(dataset_type, img_size, img_size), data)
     return data
 
 
@@ -42,18 +42,21 @@ def process_data_set_rgb(directory, dataset_type, img_size):
         data.append([np.array(img), np.array(label)])
     if dataset_type == "train":
         shuffle(data)
+    np.save('{}_rgb_data_{}x{}.npy'.format(dataset_type, img_size, img_size), data)
     return data
 
 
-def analyse_images(train_dir, test_dir):
+def analyse_images(train_dir, test_dir, val_dir):
     # Input directories
     # Output prints with number of data
 
     total_train_number = len(os.listdir(train_dir))
     total_test_number = len(os.listdir(test_dir))
+    total_val_number = len(os.listdir(val_dir))
 
     print("--")
     print("Total training images:", total_train_number)
-    print("Total validation images:", total_test_number)
+    print("Total validation images:", total_val_number)
+    print("Total test images:", total_test_number)
     print("--")
-    return total_train_number, total_test_number
+    return total_train_number, total_val_number, total_test_number
