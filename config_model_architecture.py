@@ -1,33 +1,61 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, BatchNormalization
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, Activation, BatchNormalization
 from config_hyperparameters import img_size
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.models import Model
 
 
-def define_model(name, l2_score, dropout=0):
+def define_model(name, l2_score=0, dropout=0):
     if name == "lenet5":
         model = Sequential([
             Conv2D(6, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(img_size, img_size, 1),
                    kernel_regularizer=l2(l2_score),
                    bias_regularizer=l2(l2_score)),
+            BatchNormalization(),
             MaxPooling2D(pool_size=(2, 2), strides=2),
             Dropout(dropout),
             Conv2D(16, kernel_size=(3, 3), activation='relu', kernel_regularizer=l2(l2_score),
                    bias_regularizer=l2(l2_score)),
+            BatchNormalization(),
             MaxPooling2D(pool_size=(2, 2), strides=2),
             Dropout(dropout),
             Flatten(),
             Dense(120, activation='relu', kernel_regularizer=l2(l2_score),
                   bias_regularizer=l2(l2_score)),
+            BatchNormalization(),
             Dropout(dropout),
             Dense(84, activation='relu', kernel_regularizer=l2(l2_score),
                   bias_regularizer=l2(l2_score)),
+            BatchNormalization(),
             Dropout(dropout),
             Dense(2, activation='softmax')
         ])
         return model
+    elif name == "custom":
+        model = Sequential()
+        model.add(Conv2D(32, (3, 3), input_shape=(img_size, img_size, 1)))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Conv2D(32, (3, 3)))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Conv2D(64, (3, 3)))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
+        model.add(Dense(64))
+        model.add(BatchNormalization())
+        model.add(Activation('relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(2))
+        model.add(Activation('softmax'))
+
+        return model
+
     elif name == "vgg1":
         model = Sequential()
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
@@ -36,11 +64,13 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Flatten())
         model.add(Dense(128, activation='relu', kernel_initializer='he_uniform', kernel_regularizer=l2(l2_score),
                         bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(Dropout(dropout))
         model.add(Dense(2, activation='softmax'))
         return model
@@ -52,6 +82,7 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
@@ -60,11 +91,13 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Flatten())
         model.add(Dense(128, activation='relu', kernel_initializer='glorot_normal', kernel_regularizer=l2(l2_score),
                         bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(Dropout(dropout))
         model.add(Dense(2, activation='softmax'))
         return model
@@ -77,6 +110,7 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
@@ -85,6 +119,7 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
@@ -93,11 +128,13 @@ def define_model(name, l2_score, dropout=0):
         model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                          kernel_regularizer=l2(l2_score),
                          bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(MaxPooling2D((2, 2)))
         model.add(Dropout(dropout))
         model.add(Flatten())
         model.add(Dense(128, activation='relu', kernel_initializer='he_uniform', kernel_regularizer=l2(l2_score),
                         bias_regularizer=l2(l2_score)))
+        model.add(BatchNormalization())
         model.add(Dropout(dropout))
         model.add(Dense(2, activation='softmax'))
         return model

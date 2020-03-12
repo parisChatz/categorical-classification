@@ -8,7 +8,7 @@ from tensorflow.keras.optimizers import RMSprop
 learning_rates = [1e-2]
 momentums = [0.9]
 
-models = ['vgg1', 'vgg2', 'vgg3', 'lenet5']
+models = ['vgg1', 'vgg2', 'vgg3', 'lenet5', 'custom']
 
 optimizers = ['SGD', 'Adadelta', 'Adagrad', 'Adam', 'Adamax', 'Nadam', 'RMSprop']
 

@@ -25,10 +25,10 @@ def save_generated_images(train_X, train_Y):
             break  # otherwise the generator would loop indefinitely
 
 
-def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, lr, mom, name, im_color,
+def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, name, image_color, lr=0, mom=0,
                  save_image=False):
     graph_name = 'documentation/optimizers/model_{}_color-{}-opt-{}_lr-{}_mom-{}_batch-{}_extreme_aug.png'.format(name,
-                                                                                                                  im_color,
+                                                                                                                  image_color,
                                                                                                                   opt,
                                                                                                                   lr,
                                                                                                                   mom,
