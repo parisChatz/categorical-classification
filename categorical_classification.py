@@ -27,7 +27,6 @@ if __name__ == "__main__":
     learning_rate = 9001
     regularizator = 9001
     momentum = 9001
-    regularizator = 9001
 
     best_test_acc = best_test_accuracy
 
@@ -55,7 +54,7 @@ if __name__ == "__main__":
             val = data_preprocessing.process_data_set_grayscale(val_dir, "val", img_size)
             test = data_preprocessing.process_data_set_grayscale(test_dir, "test", img_size)
 
-        # Show dataset shape
+        # Show dataset shape*/w #
         total_train, total_val, total_test = data_preprocessing.analyse_images(train_dir, val_dir, test_dir)
 
     # # read whole Model
