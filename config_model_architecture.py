@@ -74,6 +74,7 @@ def define_model(name, l2_score=0, dropout=0):
         model.add(Dropout(dropout))
         model.add(Dense(2, activation='softmax'))
         return model
+
     elif name == "vgg2":
         model = Sequential()
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='glorot_normal', padding='same',

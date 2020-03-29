@@ -3,7 +3,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 
 # Arguments for data augmentation
-from config_data_aug_params import data_gen_args
+from config_data_aug_params import extreme_data_gen_args
+from config_hyperparameters import plot_path
 
 
 def plot_images(images_arr, img_size):
@@ -16,7 +17,7 @@ def plot_images(images_arr, img_size):
 
 def save_generated_images(train_X, train_Y):
     i = 0
-    train_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our training data
+    train_image_generator = ImageDataGenerator(**extreme_data_gen_args)  # Generator for our training data
 
     for batch in train_image_generator.flow(train_X, train_Y, batch_size=5, shuffle=True,
                                             save_to_dir="images/data_augmentation"):
@@ -25,14 +26,13 @@ def save_generated_images(train_X, train_Y):
             break  # otherwise the generator would loop indefinitely
 
 
-def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, name, image_color, lr=0, mom=0,
+def plot_results(accuracy, val_accuracy, error, val_error, epoch, batch_size, opt, name, image_color, lr=0,
                  save_image=False):
-    graph_name = 'documentation/optimizers/model_{}_color-{}-opt-{}_lr-{}_mom-{}_batch-{}_extreme_aug.png'.format(name,
-                                                                                                                  image_color,
-                                                                                                                  opt,
-                                                                                                                  lr,
-                                                                                                                  mom,
-                                                                                                                  batch_size)
+    graph_name = plot_path + '/model_{}_color-{}-opt-{}_lr-{}_batch-{}_extreme_aug.png'.format(name,
+                                                                                               image_color,
+                                                                                               opt,
+                                                                                               lr,
+                                                                                               batch_size)
     path = graph_name.split("model")
 
     epochs_range = range(epoch)

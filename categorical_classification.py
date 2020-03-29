@@ -16,7 +16,7 @@ import plotting
 import data_preprocessing
 
 # Custom config files
-from config_data_aug_params import data_gen_args
+from config_data_aug_params import extreme_data_gen_args
 from config_hyperparameters import *
 from config_model_architecture import define_model
 
@@ -24,13 +24,10 @@ if __name__ == "__main__":
 
     # DEFINE IF IMAGES ARE GRAYSCALE color[0] ELSE color[1]
     im_color = color[0]
-    learning_rate = 9001
-    regularizator = 9001
-    momentum = 9001
 
     best_test_acc = best_test_accuracy
 
-    if os.path.exists('train_{}_data_{}x{}.npy'.format(im_color, img_size, img_size)) is False:
+    if os.path.exists('train_{}_data_{}x{}.npy'.format(im_color, img_size, img_size)):
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print("Loading preprocessed dataset!")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -82,19 +79,19 @@ if __name__ == "__main__":
     # plotting.plot_images(train_X[10:], img_size)
 
     # Initialise augmented image generators
-    train_image_generator = ImageDataGenerator(**data_gen_args)  # Generator for our training data
+    train_image_generator = ImageDataGenerator(**extreme_data_gen_args)  # Generator for our training data
     validation_image_generator = ImageDataGenerator(rescale=1. / 255)  # Generator for our validation data
     test_image_generator = ImageDataGenerator(rescale=1. / 255)  # Generator for our validation data
 
     # Generate images
     # Only needed if statistics are used(featurewise_center, featurewise_std_normalization, zca_whitening)
-    if data_gen_args["featurewise_center"] or data_gen_args["featurewise_std_normalization"] is True:
+    if extreme_data_gen_args["featurewise_center"] or extreme_data_gen_args["featurewise_std_normalization"] is True:
         train_image_generator.fit(train_X)
         validation_image_generator.fit(test_X)
 
-    train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=64, shuffle=True)
-    val_data_gen = validation_image_generator.flow(val_X, val_Y, batch_size=64, shuffle=False)
-    test_data_gen = test_image_generator.flow(test_X, test_Y, batch_size=64, shuffle=False)
+    train_data_gen = train_image_generator.flow(train_X, train_Y, batch_size=32, shuffle=True)
+    val_data_gen = validation_image_generator.flow(val_X, val_Y, batch_size=32, shuffle=False)
+    test_data_gen = test_image_generator.flow(test_X, test_Y, batch_size=32, shuffle=False)
 
     # Save generated images
     # plotting.save_generated_images(train_X, train_Y)
@@ -103,81 +100,73 @@ if __name__ == "__main__":
     # Model.summary()
 
     metrics = {'train_acc': [], 'val_acc': [], 'train_loss': [], 'val_loss': [], 'test_acc': [], 'test_loss': [],
-               'batch_size': [], 'optimizers': [], 'learning_rate': [], 'regularizator': [],
-               'momentum': [], 'model': [],
-               'color': []}
+               'batch_size': [], 'optimizers': [], 'model': [], 'color': []}
+
     metrics = pd.DataFrame(data=metrics)
+
+    batch = batch_size[0]
+    epoch = epochs[0]
 
     for model in models:
         for optimizer in optimizers:
-            # for learning_rate in learning_rates:
-            #     for momentum in momentums:
-            #         for regularizator in l2_score:
-            for batch in batch_size:
-                for epoch in epochs:
 
-                    model_name = '{}{}_batch-{}_opt-{}.h5'.format(model, color,  # _lr-{}_regul-{}_mom-{}
-                                                                  batch_size,
-                                                                  optimizers,
-                                                                  # learning_rate,
-                                                                  # regularizator,
-                                                                  # momentum
-                                                                  )
+            model_name = '{}{}_batch-{}_opt-{}.h5'.format(model, color, batch_size, optimizers,
+                                                          # learning_rate,
+                                                          )
 
-                    modelX = define_model(model)  # ADD REG IF NEEDED
+            modelX = define_model(model)  # ADD REG IF NEEDED
 
-                    # opt1 = eval(optimizer)
-                    # opt = opt1()  # Here put parameters for optimizer (learning_rate=learning_rate,etc)
+            opt1 = eval(optimizer)
+            opt = opt1()  # Here put parameters for optimizer (learning_rate=learning_rate,etc)
 
-                    modelX.compile(optimizer=optimizer,
-                                   loss="categorical_crossentropy",
-                                   metrics=['categorical_accuracy'])
+            modelX.compile(optimizer=opt,
+                           loss="categorical_crossentropy",
+                           metrics=['categorical_accuracy'])
 
-                    history = modelX.fit(
-                        train_data_gen,
-                        steps_per_epoch=total_train // batch,
-                        validation_data=val_data_gen,
-                        validation_steps=total_val // batch,
-                        epochs=epoch)
+            history = modelX.fit(
+                train_data_gen,
+                steps_per_epoch=total_train // batch,
+                validation_data=val_data_gen,
+                validation_steps=total_val // batch,
+                epochs=epoch)
 
-                    # # evaluate the model
-                    test_loss, test_accuracy = modelX.evaluate(test_data_gen, steps=len(test_data_gen),
-                                                               verbose=1)
+            # # evaluate the model
+            test_loss, test_accuracy = modelX.evaluate(test_data_gen, steps=len(test_data_gen), verbose=1)
 
-                    # Save image of network
-                    # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
-                    # show_shapes=True, expand_nested=True)
+            # Save image of network
+            # plot_model(Model, to_file="images/documentation/" + model_name[:-3] + ".png",
+            # show_shapes=True, expand_nested=True)
 
-                    # Load Model if Model saved
-                    # Model = tf.keras.models.load_model(model_name)
-                    # Model.summary()
+            # Load Model if Model saved
+            # Model = tf.keras.models.load_model(model_name)
+            # Model.summary()
 
-                    # Plot training & validation accuracy/loss values
-                    tr_acc = history.history['categorical_accuracy']
-                    val_acc = history.history['val_categorical_accuracy']
+            # Plot training & validation accuracy/loss values
+            tr_acc = history.history['categorical_accuracy']
+            val_acc = history.history['val_categorical_accuracy']
 
-                    tr_loss = history.history['loss']
-                    val_loss = history.history['val_loss']
+            tr_loss = history.history['loss']
+            val_loss = history.history['val_loss']
 
-                    path = plotting.plot_results(tr_acc, val_acc, tr_loss, val_loss, epoch, batch,
-                                                 optimizer,
-                                                 model,
-                                                 im_color,
-                                                 learning_rate,
-                                                 momentum,
-                                                 save_image=True)
+            path = plotting.plot_results(tr_acc, val_acc, tr_loss, val_loss, epoch, batch,
+                                         optimizer,
+                                         model,
+                                         im_color,
+                                         # learning_rate,
+                                         save_image=save_everything)
 
-                    # Save Model
-                    if test_accuracy >= best_test_acc:
-                        modelX.save(path + 'best_model.h5')
-                    best_test_acc = test_accuracy
+            # Save Model
+            if test_accuracy >= best_test_acc and save_everything is True:
+                modelX.save(path + 'best_model.h5')
+            best_test_acc = test_accuracy
 
-                    temp_metrics = pd.Series(
-                        [tr_acc[-1], val_acc[-1], tr_loss[-1], val_loss[-1], test_accuracy, test_loss,
-                         batch, optimizer, learning_rate, regularizator, momentum, model, im_color],
-                        index=['train_acc', 'val_acc', 'train_loss', 'val_loss', 'test_acc', 'test_loss',
-                               'batch_size', 'optimizers', 'learning_rate', 'regularizator', 'momentum',
-                               'model', 'color'])
+            temp_metrics = pd.Series(
+                [tr_acc[-1], val_acc[-1], tr_loss[-1], val_loss[-1], test_accuracy, test_loss,
+                 batch, optimizer, model, im_color],
+                index=['train_acc', 'val_acc', 'train_loss', 'val_loss', 'test_acc', 'test_loss',
+                       'batch_size', 'optimizers', 'model', 'color'])
 
-                    metrics = metrics.append(temp_metrics, ignore_index=True)
-                    metrics.to_csv(path + "metrics.csv", index=False)
+            metrics = metrics.append(temp_metrics, ignore_index=True)
+
+            if save_everything is True:
+                metrics.to_csv(path + "metrics.csv", index=False)
